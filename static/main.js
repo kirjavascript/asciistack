@@ -9,11 +9,34 @@ const frameCount = document.querySelector('.frameCount');
 
 
 function render(shouldUpdate) {
-    const mode = frame(inputByte());
+    const frameData = frame(inputByte());
 
-    screen.innerHTML = `${JSON.stringify(mode,0,3)}
-        input byte: ${inputByte()}
-    `;
+    if (frameData.isMenu) {
+
+        screen.innerHTML = `${JSON.stringify(frameData,0,3)}
+            input byte: ${inputByte()}
+        `;
+    } else {
+        const { tiles } = frameData;
+        const tilesArr = JSON.parse(tiles);
+        const playfield = [];
+        while (tilesArr.length) {
+            playfield.push(tilesArr.splice(0, 10).map(d => d ? '#' : '.').join(``));
+        }
+        const cleanData = {
+            ...frameData,
+            tiles: null,
+        };
+
+
+        screen.innerHTML = `
+${playfield.join(`\n`)}
+
+        ${JSON.stringify(cleanData,0,3)}
+            input byte: ${inputByte()}
+        `;
+    }
+
 }
 
 

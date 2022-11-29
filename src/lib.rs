@@ -14,8 +14,8 @@ lazy_mut! {
 
 
 #[wasm_bindgen(start)]
-pub fn main() {
-    unsafe { state.init(); }
+pub unsafe fn main() {
+    state.init();
 }
 
 #[wasm_bindgen]
@@ -28,39 +28,35 @@ pub unsafe fn frame(input: u8) -> JsValue {
         Value(State::MenuState(menu_state)) => {
             js_sys::Reflect::set(
                 &response,
-                &"menu-mode".into(),
+                &"menuMode".into(),
                 &format!("{}", menu_state.menu_mode).into()
             ).unwrap();
 
             js_sys::Reflect::set(
                 &response,
-                &"menu".into(),
+                &"isMenu".into(),
                 &true.into()
             ).unwrap();
+
+            let game_type = if
+                menu_state.game_type == meta_nestris::game_type::GameType::A.into()
+            { "A" } else { "B" };
 
             js_sys::Reflect::set(
                 &response,
                 &"game-type".into(),
-                &true.into()
+                &game_type.into(),
             ).unwrap();
 
             js_sys::Reflect::set(
                 &response,
                 &"level".into(),
-                &true.into()
-            ).unwrap();
-
-            js_sys::Reflect::set(
-                &response,
-                &"height".into(),
-                &true.into()
+                &menu_state.selected_level.into()
             ).unwrap();
 
             response.into()
         },
         Value(State::GameplayState(gameplay_state)) => {
-
-
             js_sys::Reflect::set(
                 &response,
                 &"paused".into(),
@@ -85,10 +81,48 @@ pub unsafe fn frame(input: u8) -> JsValue {
                 &gameplay_state.current_piece.to_id().into()
             ).unwrap();
 
+            let offsets: Array = gameplay_state.current_piece.get_tile_offsets()
+                .iter()
+                .map(|(x, y)| {
+                    let obj = Object::new();
+
+                    js_sys::Reflect::set(
+                        &response,
+                        &"x".into(),
+                        &(*x).into(),
+                    ).unwrap();
+
+                    js_sys::Reflect::set(
+                        &response,
+                        &"y".into(),
+                        &(*y).into(),
+                    ).unwrap();
+
+                    obj
+                }).collect();
+
+            js_sys::Reflect::set(
+                &response,
+                &"piece-offsets".into(),
+                &offsets,
+            ).unwrap();
+
+            js_sys::Reflect::set(
+                &response,
+                &"next".into(),
+                &gameplay_state.next_piece.to_id().into()
+            ).unwrap();
+
             js_sys::Reflect::set(
                 &response,
                 &"tiles".into(),
                 &format!("{}", gameplay_state.tiles).into()
+            ).unwrap();
+
+            js_sys::Reflect::set(
+                &response,
+                &"score".into(),
+                &gameplay_state.score.into()
             ).unwrap();
 
             response.into()
