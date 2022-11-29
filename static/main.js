@@ -13,27 +13,28 @@ function render(shouldUpdate) {
 
     if (frameData.isMenu) {
 
-        screen.innerHTML = `${JSON.stringify(frameData,0,3)}
-            input byte: ${inputByte()}
-        `;
+        screen.innerHTML = JSON.stringify(frameData,0,3);
     } else {
-        const { tiles } = frameData;
+        const { tiles, pieceX, pieceY, pieceOffsets } = frameData;
         const tilesArr = JSON.parse(tiles);
         const playfield = [];
         while (tilesArr.length) {
-            playfield.push(tilesArr.splice(0, 10).map(d => d ? '#' : '.').join(``));
+            playfield.push(tilesArr.splice(0, 10).map(d => d ? '#' : '.'));
         }
+        pieceOffsets.forEach(({x, y}) => {
+            playfield[y+pieceY][x+pieceX] = '#';
+        });
+
         const cleanData = {
             ...frameData,
             tiles: null,
+            pieceOffsets: null,
         };
 
 
         screen.innerHTML = `
-${playfield.join(`\n`)}
-
-        ${JSON.stringify(cleanData,0,3)}
-            input byte: ${inputByte()}
+${playfield.map(d=>d.join('')).join(`\n`)}
+${JSON.stringify(cleanData,0,3)}
         `;
     }
 

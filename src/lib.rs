@@ -44,7 +44,7 @@ pub unsafe fn frame(input: u8) -> JsValue {
 
             js_sys::Reflect::set(
                 &response,
-                &"game-type".into(),
+                &"gameType".into(),
                 &game_type.into(),
             ).unwrap();
 
@@ -65,13 +65,13 @@ pub unsafe fn frame(input: u8) -> JsValue {
 
             js_sys::Reflect::set(
                 &response,
-                &"x".into(),
+                &"pieceX".into(),
                 &gameplay_state.current_piece_x.into()
             ).unwrap();
 
             js_sys::Reflect::set(
                 &response,
-                &"y".into(),
+                &"pieceY".into(),
                 &gameplay_state.current_piece_y.into()
             ).unwrap();
 
@@ -87,13 +87,13 @@ pub unsafe fn frame(input: u8) -> JsValue {
                     let obj = Object::new();
 
                     js_sys::Reflect::set(
-                        &response,
+                        &obj,
                         &"x".into(),
                         &(*x).into(),
                     ).unwrap();
 
                     js_sys::Reflect::set(
-                        &response,
+                        &obj,
                         &"y".into(),
                         &(*y).into(),
                     ).unwrap();
@@ -103,7 +103,7 @@ pub unsafe fn frame(input: u8) -> JsValue {
 
             js_sys::Reflect::set(
                 &response,
-                &"piece-offsets".into(),
+                &"pieceOffsets".into(),
                 &offsets,
             ).unwrap();
 
