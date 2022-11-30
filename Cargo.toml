@@ -12,5 +12,5 @@ crate-type = ["cdylib"]
 wasm-bindgen = "0.2.83"
 js-sys = "0.3.60"
 lazy_mut = "0.1.0"
-meta_nestris = { git = "https://github.com/negative-seven/meta_nestris" }
-# meta_nestris = { path = "./meta_nestris" }
+# meta_nestris = { git = "https://github.com/negative-seven/meta_nestris" }
+meta_nestris = { path = "./meta_nestris" }

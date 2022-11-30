@@ -1,11 +1,11 @@
-wasm_bindgen('./asciistack_bg.wasm')
-    .then(onLoad)
-    .catch(console.error);
-
-const { frame } = wasm_bindgen;
+wasm_bindgen('./asciistack_bg.wasm').then(onLoad).catch(console.error);
 
 const debug = document.querySelector('.debug');
 const frameCount = document.querySelector('.frameCount');
+
+document.querySelector('#skip-legal').addEventListener('click', () => {
+    wasm_bindgen.skip_legal();
+});
 
 const playfieldEl = document.querySelector('.playfield');
 const gameEl = document.querySelector('.game');
@@ -20,21 +20,21 @@ const arrowsB = [...document.querySelectorAll('.arrowB')];
 const selectedLevelEl = document.querySelector('#selected-level');
 const levelNumbersEl = document.querySelector('#level-numbers');
 
-debug.style.display = 'none';
+// debug.style.display = 'none';
 
 const nextPieces = {
     [0x12]: ['####', 1, 3.5],
     [0x02]: ['###\n #', 1.5, 3.1],
     [0x7]: ['###\n  #', 1.5, 3.1],
     [0x8]: ['##\n ##', 1.5, 3.1],
-    [0xA]: ['##\n##', 2, 3.1],
-    [0xB]: [' ##\n##', 1.5, 3.1],
-    [0xE]: ['###\n#', 1.5, 3.1],
+    [0xa]: ['##\n##', 2, 3.1],
+    [0xb]: [' ##\n##', 1.5, 3.1],
+    [0xe]: ['###\n#', 1.5, 3.1],
 };
 
 function render(shouldUpdate) {
     const input = inputByte();
-    const frameData = frame(input);
+    const frameData = wasm_bindgen.frame(input);
     if (!shouldUpdate) return;
 
     if (frameData.isMenu) {
@@ -42,48 +42,66 @@ function render(shouldUpdate) {
         const { menuMode, gameType, level } = frameData;
         gameEl.style.display = 'none';
         menuEl.style.display = '';
-        debug.innerHTML = JSON.stringify(frameData,0,3);
-        [...menuEl.children].forEach(node => {
+        debug.innerHTML = JSON.stringify(frameData, 0, 3);
+        [...menuEl.children].forEach((node) => {
             node.style.display = node.id === menuMode ? '' : 'none';
         });
         if (menuMode === 'GameTypeSelect') {
-            arrowsA.forEach(node => {
+            arrowsA.forEach((node) => {
                 node.textContent = gameType === 'A' ? node.dataset.glyph : ' ';
             });
-            arrowsB.forEach(node => {
+            arrowsB.forEach((node) => {
                 node.textContent = gameType === 'B' ? node.dataset.glyph : ' ';
             });
             mode.textContent = gameType === 'A' ? 1 : 2;
         } else if (menuMode === 'LevelSelect') {
-            const selectedLevel = level + ((input & 0x80) /12 | 0);
+            const selectedLevel = level + (((input & 0x80) / 12) | 0);
             selectedLevelEl.textContent = String(selectedLevel).padStart(2, 0);
             let count = 0;
-            levelNumbersEl.textContent = levelNumbersEl.textContent
-                .replace(/\d|#/g, _ => {
+            levelNumbersEl.textContent = levelNumbersEl.textContent.replace(
+                /\d|#/g,
+                (_) => {
                     const number = count === level ? '#' : count;
                     count++;
                     return number;
-                });
+                },
+            );
         }
     } else {
         // gameplay
         gameEl.style.display = '';
         menuEl.style.display = 'none';
 
-        const { tiles, pieceX, pieceY, pieceOffsets, next, score, lines, level } = frameData;
+        const {
+            tiles,
+            pieceX,
+            pieceY,
+            pieceOffsets,
+            next,
+            score,
+            lines,
+            level,
+            playState,
+        } = frameData;
         const tilesArr = JSON.parse(tiles);
         const playfield = [];
         while (tilesArr.length) {
-            playfield.push(tilesArr.splice(0, 10).map(d => d ? '#' : ' '));
+            playfield.push(tilesArr.splice(0, 10).map((d) => (d ? '#' : ' ')));
         }
-        pieceOffsets.forEach(({x, y}) => {
-            const Y = y+pieceY;
-            if (Y >= 0) {
-                playfield[Y][x+pieceX] = '#';
-            }
-        });
 
-        playfieldEl.textContent = playfield.slice(0, 20).map(d=>'|' + d.join('') + '|').join(`\n`);
+        if (['MoveTetrimino', 'LockTetrimino'].includes(playState)) {
+            pieceOffsets.forEach(({ x, y }) => {
+                const Y = y + pieceY;
+                if (Y >= 0) {
+                    playfield[Y][x + pieceX] = '#';
+                }
+            });
+        }
+
+        playfieldEl.textContent = playfield
+            .slice(0, 20)
+            .map((d) => '|' + d.join('') + '|')
+            .join(`\n`);
         scoreEl.textContent = String(score).padStart(7, 0);
         linesEl.textContent = String(lines).padStart(4, 0);
         levelEl.textContent = String(level).padStart(2, 0).padStart(3);
@@ -99,9 +117,8 @@ function render(shouldUpdate) {
             nextOffsets: null,
         };
 
-        debug.innerHTML = JSON.stringify(cleanData,0,3);
+        debug.innerHTML = JSON.stringify(cleanData, 0, 3);
     }
-
 }
 
 function onLoad() {
@@ -111,13 +128,13 @@ function onLoad() {
         requestAnimationFrame(loop);
 
         const diff = performance.now() - epoch;
-        const frames = diff * 0.0600988 | 0;
+        const frames = (diff * 0.0600988) | 0;
         const frameAmount = frames - framesDone;
         frameCount.textContent = String(frameAmount);
 
         if (document.visibilityState !== 'hidden') {
             if (frameAmount > 5) {
-                render(true)
+                render(true);
             } else {
                 for (let i = 0; i < frameAmount; i++) {
                     render(i === frameAmount - 1);
@@ -130,12 +147,11 @@ function onLoad() {
     loop();
 }
 
-
 // input
 
 const controls = new Set([]);
 
-const controlBytes = [0x80, 0x40, 0x20, 0x10, 0x8, 0x4, 0x2, 0x1]
+const controlBytes = [0x80, 0x40, 0x20, 0x10, 0x8, 0x4, 0x2, 0x1];
 
 function inputByte() {
     let byte = 0;
@@ -165,7 +181,6 @@ let keymap = {};
     });
 });
 
-
 // keyboard
 
 const html = document.documentElement;
@@ -175,8 +190,9 @@ html.addEventListener('keydown', (e) => {
         const index = keymap[e.key];
         // handle SOCD as second input priority for L/R
         if (index === 6) controls.delete(7);
-        if (index === 7) controls.delete(6);https://twitter.com/DannyDeVito/status/1597703356226543616
-        controls.add(index);
+        if (index === 7) controls.delete(6);
+        //twitter.com/DannyDeVito/status/1597703356226543616
+        https: controls.add(index);
         e.preventDefault();
     }
 });

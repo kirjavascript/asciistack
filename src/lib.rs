@@ -19,6 +19,18 @@ pub unsafe fn main() {
     STATE.init();
 }
 
+#[wasm_bindgen]
+pub unsafe fn skip_legal() {
+    match &mut STATE {
+        Value(State::MenuState(state)) => {
+            state.copyright_skip_timer = 0;
+            state.delay_timer = 0;
+        },
+        _ => {},
+
+    }
+}
+
 fn offsets_to_array(offsets: &[(i8, i8); 4]) -> Array {
     offsets
         .iter()
@@ -41,6 +53,7 @@ fn offsets_to_array(offsets: &[(i8, i8); 4]) -> Array {
         }).collect()
 }
 
+
 #[wasm_bindgen]
 pub unsafe fn frame(input: u8) -> JsValue {
     STATE.step(Input::from(input));
@@ -48,15 +61,12 @@ pub unsafe fn frame(input: u8) -> JsValue {
     let response = Object::new();
 
     match &mut STATE {
-        Value(State::MenuState(menu_state)) => {
-
-            menu_state.copyright_skip_timer = 0;
-            menu_state.delay_timer = 0;
+        Value(State::MenuState(state)) => {
 
             js_sys::Reflect::set(
                 &response,
                 &"menuMode".into(),
-                &format!("{}", menu_state.menu_mode).into()
+                &format!("{}", state.menu_mode).into()
             ).unwrap();
 
             js_sys::Reflect::set(
@@ -66,7 +76,7 @@ pub unsafe fn frame(input: u8) -> JsValue {
             ).unwrap();
 
             let game_type = if
-                menu_state.game_type ==  GameType::A.into()
+                state.game_type ==  GameType::A.into()
             { "A" } else { "B" };
 
             js_sys::Reflect::set(
@@ -78,65 +88,72 @@ pub unsafe fn frame(input: u8) -> JsValue {
             js_sys::Reflect::set(
                 &response,
                 &"level".into(),
-                &menu_state.selected_level.into()
+                &state.selected_level.into()
             ).unwrap();
 
             response.into()
         },
-        Value(State::GameplayState(gameplay_state)) => {
+        Value(State::GameplayState(state)) => {
+
+            js_sys::Reflect::set(
+                &response,
+                &"playState".into(),
+                &format!("{:?}", state.play_state).into(),
+            ).unwrap();
+
             js_sys::Reflect::set(
                 &response,
                 &"paused".into(),
-                &gameplay_state.paused.into()
+                &state.paused.into()
             ).unwrap();
 
             js_sys::Reflect::set(
                 &response,
                 &"pieceX".into(),
-                &gameplay_state.current_piece_x.into()
+                &state.current_piece_x.into()
             ).unwrap();
 
             js_sys::Reflect::set(
                 &response,
                 &"pieceY".into(),
-                &gameplay_state.current_piece_y.into()
+                &state.current_piece_y.into()
             ).unwrap();
 
             js_sys::Reflect::set(
                 &response,
                 &"pieceOffsets".into(),
-                &offsets_to_array(gameplay_state.current_piece.get_tile_offsets()),
+                &offsets_to_array(state.current_piece.get_tile_offsets()),
             ).unwrap();
 
             js_sys::Reflect::set(
                 &response,
                 &"next".into(),
-                &gameplay_state.next_piece.to_id().into(),
+                &state.next_piece.to_id().into(),
             ).unwrap();
 
             js_sys::Reflect::set(
                 &response,
                 &"tiles".into(),
-                &format!("{}", gameplay_state.tiles).into()
+                &format!("{}", state.tiles).into()
             ).unwrap();
 
             js_sys::Reflect::set(
                 &response,
                 &"score".into(),
-                &gameplay_state.score.into()
+                &state.score.into()
             ).unwrap();
 
             js_sys::Reflect::set(
                 &response,
                 &"lines".into(),
-                &gameplay_state.line_count.into()
+                &state.line_count.into()
             ).unwrap();
 
 
             js_sys::Reflect::set(
                 &response,
                 &"level".into(),
-                &gameplay_state.level.into()
+                &state.level.into()
             ).unwrap();
 
             response.into()

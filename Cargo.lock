@@ -120,7 +120,6 @@ checksum = "2dffe52ecf27772e601905b7522cb4ef790d2cc203488bbd0e2fe85fcb74566d"
 [[package]]
 name = "meta_nestris"
 version = "0.1.0"
-source = "git+https://github.com/negative-seven/meta_nestris#bad9b86a2aa5d16446893b2ab57c69602fd8a346"
 dependencies = [
  "bitmask-enum",
  "bitvec",

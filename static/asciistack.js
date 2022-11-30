@@ -184,6 +184,12 @@ __exports.main = function() {
 };
 
 /**
+*/
+__exports.skip_legal = function() {
+    wasm.skip_legal();
+};
+
+/**
 * @param {number} input
 * @returns {any}
 */
