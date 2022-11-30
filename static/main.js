@@ -18,6 +18,7 @@ const modeEl = [...document.querySelectorAll('#mode')];
 const arrowsA = [...document.querySelectorAll('.arrowA')];
 const arrowsB = [...document.querySelectorAll('.arrowB')];
 const selectedLevelEl = document.querySelector('#selected-level');
+const levelNumbersEl = document.querySelector('#level-numbers');
 
 debug.style.display = 'none';
 
@@ -56,6 +57,13 @@ function render(shouldUpdate) {
         } else if (menuMode === 'LevelSelect') {
             const selectedLevel = level + ((input & 0x80) /12 | 0);
             selectedLevelEl.textContent = String(selectedLevel).padStart(2, 0);
+            let count = 0;
+            levelNumbersEl.textContent = levelNumbersEl.textContent
+                .replace(/\d|#/g, _ => {
+                    const number = count === level ? '#' : count;
+                    count++;
+                    return number;
+                });
         }
     } else {
         // gameplay
