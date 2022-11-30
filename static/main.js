@@ -6,6 +6,7 @@ const { frame } = wasm_bindgen;
 
 const debug = document.querySelector('.debug');
 const playfieldEl = document.querySelector('.playfield');
+const gameEl = document.querySelector('.game');
 const frameCount = document.querySelector('.frameCount');
 
 function render(shouldUpdate) {
@@ -13,14 +14,16 @@ function render(shouldUpdate) {
     if (!shouldUpdate) return;
 
     if (frameData.isMenu) {
-
+        gameEl.style.display = 'none';
         debug.innerHTML = JSON.stringify(frameData,0,3);
     } else {
+        gameEl.style.display = '';
+
         const { tiles, pieceX, pieceY, pieceOffsets } = frameData;
         const tilesArr = JSON.parse(tiles);
         const playfield = [];
         while (tilesArr.length) {
-            playfield.push(tilesArr.splice(0, 10).map(d => d ? '#' : '.'));
+            playfield.push(tilesArr.splice(0, 10).map(d => d ? '#' : ' '));
         }
         pieceOffsets.forEach(({x, y}) => {
             const Y = y+pieceY;
@@ -29,8 +32,7 @@ function render(shouldUpdate) {
             }
         });
 
-        playfieldEl.textContent = playfield.slice(0, 20).map(d=>d.join('')).join(`\n`);
-
+        playfieldEl.textContent = playfield.slice(0, 20).map(d=>'|' + d.join('') + '|').join(`\n`);
 
         const cleanData = {
             ...frameData,

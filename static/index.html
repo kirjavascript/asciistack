@@ -10,7 +10,41 @@
     <body>
         <main>
             <section class="game">
-                <pre class="playfield"> </pre>
+                <div class="game-left">
+                    <div >/-----\</div>
+                    <div >|STACK|</div>
+                    <div >\-----/</div>
+                </div>
+                <div class="game-middle">
+                    <div >/----------\</div>
+                    <div >|LINES-0000|</div>
+                    <div >\----------/</div>
+                    <div >/----------\</div>
+                    <pre class="playfield"></pre>
+                    <div >\----------/</div>
+                </div>
+                <div class="game-right">
+                    <div class="game-score">
+                        <div>/-------\</div>
+                        <pre>|SCORE  |</pre>
+                        <div>|0000000|</div>
+                        <div>\-------/</div>
+                    </div>
+                    <div class="game-next">
+                        <div>/----\</div>
+                        <pre>|NEXT|</pre>
+                        <pre>|    |</pre>
+                        <pre>|  # |</pre>
+                        <pre>| ###|</pre>
+                        <div>\----/</div>
+                    </div>
+                    <div class="game-level">
+                        <div>/-----\</div>
+                        <pre>|LEVEL|</pre>
+                        <pre>|  18 |</pre>
+                        <div>\-----/</div>
+                    </div>
+                </div>
             </section>
             <pre class="debug"> </pre>
             <p id="controls">
@@ -36,7 +70,7 @@
             class="source"
             target="_blank"
             href="https://github.com/kirjavascript/asciistack"
-        >
+            >
             source
         </a>
         <script src="./asciistack.js"></script>

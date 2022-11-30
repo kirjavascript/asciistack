@@ -3,7 +3,16 @@
     src: url('./square.ttf');
 }
 
+pre {
+    font-family: 'Square', monospace;
+    margin: 0;
+}
+.options, #controls {
+    font-family: monospace;
+}
+
 html, body {
+    font-family: 'Square';
     height: 100%;
     margin: 0;
     background-color: #111;
@@ -17,7 +26,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: monospace;
 }
 main {
     display: flex;
@@ -25,12 +33,21 @@ main {
     align-items: center;
     padding: 20px 0;
 }
-pre {
-    font-family: 'Square';
+
+.game {
+    font-size: 20px;
+    display: flex;
 }
-.playfield {
-    font-size: 30px;
+.game-right, .game-left {
+    width: 10em;
 }
+.game-left {
+    padding-left: 2em;
+}
+.game-next {
+    padding-top: 6em;
+}
+
 .options {
     display: flex;
     justify-content: space-between;
@@ -46,7 +63,6 @@ pre {
 button, input {
     background-color: #111;
     color: #777;
-    font-family: monospace;
     font-size: 11px;
     font-weight: bold;
     border: 2px solid #777;

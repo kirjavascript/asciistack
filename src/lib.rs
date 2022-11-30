@@ -44,7 +44,7 @@ pub unsafe fn frame(input: u8) -> JsValue {
             ).unwrap();
 
             let game_type = if
-                menu_state.game_type == GameType::A.into()
+                menu_state.game_type ==  GameType::A.into()
             { "A" } else { "B" };
 
             js_sys::Reflect::set(
@@ -128,6 +128,12 @@ pub unsafe fn frame(input: u8) -> JsValue {
                 &response,
                 &"score".into(),
                 &gameplay_state.score.into()
+            ).unwrap();
+
+            js_sys::Reflect::set(
+                &response,
+                &"lines".into(),
+                &gameplay_state.lines.into()
             ).unwrap();
 
             response.into()
