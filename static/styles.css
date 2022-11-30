@@ -4,8 +4,9 @@
 }
 
 pre {
-    font-family: 'Square', monospace;
+    font-family: 'Square';
     margin: 0;
+    line-height: 1em;
 }
 .options, #controls {
     font-family: monospace;
@@ -17,6 +18,8 @@ html, body {
     margin: 0;
     background-color: #111;
     color: #777;
+    background-color: #080808;
+    color: #999;
     box-sizing: border-box;
 }
 *, *:before, *:after {
@@ -34,18 +37,37 @@ main {
     padding: 20px 0;
 }
 
+.screen-size {
+    width: 32em;
+    height: 30em;
+}
+
 .game {
     font-size: 20px;
     display: flex;
+    padding: 2em 1em;
 }
 .game-right, .game-left {
     width: 10em;
 }
 .game-left {
-    padding-left: 2em;
+    padding-top: 1em;
 }
 .game-next {
-    padding-top: 6em;
+    margin-top: 4em;
+    position: relative;
+}
+
+#next-hover {
+    position: absolute;
+    left: 0em;
+    top: 0em;
+}
+.menu {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
 }
 
 .options {

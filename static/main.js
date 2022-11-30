@@ -5,9 +5,25 @@ wasm_bindgen('./asciistack_bg.wasm')
 const { frame } = wasm_bindgen;
 
 const debug = document.querySelector('.debug');
+const frameCount = document.querySelector('.frameCount');
+
 const playfieldEl = document.querySelector('.playfield');
 const gameEl = document.querySelector('.game');
-const frameCount = document.querySelector('.frameCount');
+const menuEl = document.querySelector('.menu');
+const scoreEl = document.querySelector('#score');
+const linesEl = document.querySelector('#lines');
+const levelEl = document.querySelector('#level');
+const nextEl = document.querySelector('#next-hover');
+
+const nextPieces = {
+    [0x12]: ['####', 1, 3.5],
+    [0x02]: ['###\n #', 1.5, 3.1],
+    [0x7]: ['###\n  #', 1.5, 3.1],
+    [0x8]: ['##\n ##', 1.5, 3.1],
+    [0xA]: ['##\n##', 2, 3.1],
+    [0xB]: [' ##\n##', 1.5, 3.1],
+    [0xE]: ['###\n#', 1.5, 3.1],
+};
 
 function render(shouldUpdate) {
     const frameData = frame(inputByte());
@@ -15,11 +31,18 @@ function render(shouldUpdate) {
 
     if (frameData.isMenu) {
         gameEl.style.display = 'none';
+        menuEl.style.display = '';
         debug.innerHTML = JSON.stringify(frameData,0,3);
+        [...menuEl.children].forEach(node => {
+            // console.log(node);
+            // console.log(node.id, frameData.menuMode);
+            node.style.display = node.id === frameData.menuMode ? '' : 'none';
+        });
     } else {
         gameEl.style.display = '';
+        menuEl.style.display = 'none';
 
-        const { tiles, pieceX, pieceY, pieceOffsets } = frameData;
+        const { tiles, pieceX, pieceY, pieceOffsets, next, score, lines, level } = frameData;
         const tilesArr = JSON.parse(tiles);
         const playfield = [];
         while (tilesArr.length) {
@@ -33,11 +56,19 @@ function render(shouldUpdate) {
         });
 
         playfieldEl.textContent = playfield.slice(0, 20).map(d=>'|' + d.join('') + '|').join(`\n`);
+        scoreEl.textContent = String(score).padStart(7, 0);
+        linesEl.textContent = String(lines).padStart(4, 0);
+        levelEl.textContent = String(level).padStart(2, 0).padStart(3);
+
+        nextEl.textContent = nextPieces[next][0];
+        nextEl.style.left = nextPieces[next][1] + 'em';
+        nextEl.style.top = nextPieces[next][2] + 'em';
 
         const cleanData = {
             ...frameData,
             tiles: null,
             pieceOffsets: null,
+            nextOffsets: null,
         };
 
         debug.innerHTML = JSON.stringify(cleanData,0,3);
@@ -117,7 +148,7 @@ html.addEventListener('keydown', (e) => {
         const index = keymap[e.key];
         // handle SOCD as second input priority for L/R
         if (index === 6) controls.delete(7);
-        if (index === 7) controls.delete(6);
+        if (index === 7) controls.delete(6);https://twitter.com/DannyDeVito/status/1597703356226543616
         controls.add(index);
         e.preventDefault();
     }

@@ -19,6 +19,28 @@ pub unsafe fn main() {
     STATE.init();
 }
 
+fn offsets_to_array(offsets: &[(i8, i8); 4]) -> Array {
+    offsets
+        .iter()
+        .map(|(x, y)| {
+            let obj = Object::new();
+
+            js_sys::Reflect::set(
+                &obj,
+                &"x".into(),
+                &(*x).into(),
+            ).unwrap();
+
+            js_sys::Reflect::set(
+                &obj,
+                &"y".into(),
+                &(*y).into(),
+            ).unwrap();
+
+            obj
+        }).collect()
+}
+
 #[wasm_bindgen]
 pub unsafe fn frame(input: u8) -> JsValue {
     STATE.step(Input::from(input));
@@ -82,40 +104,14 @@ pub unsafe fn frame(input: u8) -> JsValue {
 
             js_sys::Reflect::set(
                 &response,
-                &"piece".into(),
-                &gameplay_state.current_piece.to_id().into()
-            ).unwrap();
-
-            let offsets: Array = gameplay_state.current_piece.get_tile_offsets()
-                .iter()
-                .map(|(x, y)| {
-                    let obj = Object::new();
-
-                    js_sys::Reflect::set(
-                        &obj,
-                        &"x".into(),
-                        &(*x).into(),
-                    ).unwrap();
-
-                    js_sys::Reflect::set(
-                        &obj,
-                        &"y".into(),
-                        &(*y).into(),
-                    ).unwrap();
-
-                    obj
-                }).collect();
-
-            js_sys::Reflect::set(
-                &response,
                 &"pieceOffsets".into(),
-                &offsets,
+                &offsets_to_array(gameplay_state.current_piece.get_tile_offsets()),
             ).unwrap();
 
             js_sys::Reflect::set(
                 &response,
                 &"next".into(),
-                &gameplay_state.next_piece.to_id().into()
+                &gameplay_state.next_piece.to_id().into(),
             ).unwrap();
 
             js_sys::Reflect::set(
@@ -133,7 +129,14 @@ pub unsafe fn frame(input: u8) -> JsValue {
             js_sys::Reflect::set(
                 &response,
                 &"lines".into(),
-                &gameplay_state.lines.into()
+                &gameplay_state.line_count.into()
+            ).unwrap();
+
+
+            js_sys::Reflect::set(
+                &response,
+                &"level".into(),
+                &gameplay_state.level.into()
             ).unwrap();
 
             response.into()

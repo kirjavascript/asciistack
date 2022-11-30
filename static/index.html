@@ -9,15 +9,16 @@
     </head>
     <body>
         <main>
-            <section class="game">
+            <pre class="debug"> </pre>
+            <section class="game screen-size">
                 <div class="game-left">
-                    <div >/-----\</div>
-                    <div >|STACK|</div>
-                    <div >\-----/</div>
+                    <div >/------\</div>
+                    <div >|MODE-<span id="mode">1</span>|</div>
+                    <div >\------/</div>
                 </div>
                 <div class="game-middle">
                     <div >/----------\</div>
-                    <div >|LINES-0000|</div>
+                    <div >|LINES-<span id="lines">0000</span>|</div>
                     <div >\----------/</div>
                     <div >/----------\</div>
                     <pre class="playfield"></pre>
@@ -26,27 +27,95 @@
                 <div class="game-right">
                     <div class="game-score">
                         <div>/-------\</div>
+                        <pre>|       |</pre>
                         <pre>|SCORE  |</pre>
-                        <div>|0000000|</div>
+                        <div>|<span id="score">0000000</span>|</div>
+                        <pre>|       |</pre>
                         <div>\-------/</div>
                     </div>
                     <div class="game-next">
+                        <pre id="next-hover"></pre>
                         <div>/----\</div>
                         <pre>|NEXT|</pre>
                         <pre>|    |</pre>
-                        <pre>|  # |</pre>
-                        <pre>| ###|</pre>
+                        <pre>|    |</pre>
+                        <pre>|    |</pre>
+                        <pre>|    |</pre>
                         <div>\----/</div>
                     </div>
                     <div class="game-level">
                         <div>/-----\</div>
                         <pre>|LEVEL|</pre>
-                        <pre>|  18 |</pre>
+                        <pre>| <span id="level">&nbsp;??</span> |</pre>
                         <div>\-----/</div>
                     </div>
                 </div>
             </section>
-            <pre class="debug"> </pre>
+            <div class="menu screen-size">
+                <pre id="CopyrightScreen">
+     TM AND &copy; 2022
+
+    NEGATIVE-SEVEN
+
+       ("MAYA!")
+
+   FREE PUZZLE GAME
+
+    &copy; 2022 KIRJAVA
+
+  NO RIGHTS RESERVED
+
+ORIGINAL CONCEPT,DESIGN
+
+     AND PROGRAM
+
+      BY SOMEONE
+                </pre>
+                <pre id="TitleScreen">
+                                 d8b d8b
+                                 Y8P Y8P
+
+       8888b.  .d8888b   .d8888b 888 888
+          "88b 88K      d88P"    888 888
+      .d888888 "Y8888b. 888      888 888
+      888  888      X88 Y88b.    888 888
+      "Y888888  88888P'  "Y8888P 888 888
+                                           888
+         888                      888      888
+         888                      888      888
+.d8888b  888888  8888b.   .d8888b 888  888 888
+88K      888        "88b d88P"    888 .88P 888
+"Y8888b. 888    .d888888 888      888888K  Y8P
+     X88 Y88b.  888  888 Y88b.    888 "88b  "
+ 88888P'  "Y888 "Y888888  "Y8888P 888  888 888
+
+
+
+
+
+                   PUSH START
+
+                </pre>
+                <pre id="GameTypeSelect">
+/------------\
+| GAME  MODE |
+\------------/
+
+    /--------\  /--------\
+    |<span data-glyph=">" class="arrow1"> </span>MODE-1<span data-glyph="<" class="arrow1"> </span>|  |<span data-glyph=">" class="arrow2"> </span>MODE-2<span data-glyph="<" class="arrow2"> </span>|
+    \--------/  \--------/
+                </pre>
+                <pre id="LevelSelect">
+  /-----\
+  |LEVEL|
+  \-----/
+/---------\
+|0|1|2|3|4|
+|-|-|-|-|-|
+|5|6|7|8|9|
+\---------/
+                </pre>
+            </div>
             <p id="controls">
                 Arrows / WASD / IJKL
                 B: Z / N
