@@ -29,7 +29,7 @@ function render(shouldUpdate) {
             }
         });
 
-        playfieldEl.textContent = playfield.map(d=>d.join('')).join(`\n`);
+        playfieldEl.textContent = playfield.slice(0, 20).map(d=>d.join('')).join(`\n`);
 
 
         const cleanData = {

@@ -1,10 +1,9 @@
 @font-face {
     font-family: 'Square';
-    src: url('./square.ttf')  format('truetype'); /* Legacy iOS */
+    src: url('./square.ttf');
 }
 
 html, body {
-    /* font-family: 'Square'; */
     height: 100%;
     margin: 0;
     background-color: #111;
@@ -25,6 +24,12 @@ main {
     flex-direction: column;
     align-items: center;
     padding: 20px 0;
+}
+pre {
+    font-family: 'Square';
+}
+.playfield {
+    font-size: 30px;
 }
 .options {
     display: flex;
