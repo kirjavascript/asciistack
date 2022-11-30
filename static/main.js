@@ -14,6 +14,12 @@ const scoreEl = document.querySelector('#score');
 const linesEl = document.querySelector('#lines');
 const levelEl = document.querySelector('#level');
 const nextEl = document.querySelector('#next-hover');
+const modeEl = [...document.querySelectorAll('#mode')];
+const arrowsA = [...document.querySelectorAll('.arrowA')];
+const arrowsB = [...document.querySelectorAll('.arrowB')];
+const selectedLevelEl = document.querySelector('#selected-level');
+
+debug.style.display = 'none';
 
 const nextPieces = {
     [0x12]: ['####', 1, 3.5],
@@ -26,19 +32,33 @@ const nextPieces = {
 };
 
 function render(shouldUpdate) {
-    const frameData = frame(inputByte());
+    const input = inputByte();
+    const frameData = frame(input);
     if (!shouldUpdate) return;
 
     if (frameData.isMenu) {
+        // menu
+        const { menuMode, gameType, level } = frameData;
         gameEl.style.display = 'none';
         menuEl.style.display = '';
         debug.innerHTML = JSON.stringify(frameData,0,3);
         [...menuEl.children].forEach(node => {
-            // console.log(node);
-            // console.log(node.id, frameData.menuMode);
-            node.style.display = node.id === frameData.menuMode ? '' : 'none';
+            node.style.display = node.id === menuMode ? '' : 'none';
         });
+        if (menuMode === 'GameTypeSelect') {
+            arrowsA.forEach(node => {
+                node.textContent = gameType === 'A' ? node.dataset.glyph : ' ';
+            });
+            arrowsB.forEach(node => {
+                node.textContent = gameType === 'B' ? node.dataset.glyph : ' ';
+            });
+            mode.textContent = gameType === 'A' ? 1 : 2;
+        } else if (menuMode === 'LevelSelect') {
+            const selectedLevel = level + ((input & 0x80) /12 | 0);
+            selectedLevelEl.textContent = String(selectedLevel).padStart(2, 0);
+        }
     } else {
+        // gameplay
         gameEl.style.display = '';
         menuEl.style.display = 'none';
 
@@ -75,7 +95,6 @@ function render(shouldUpdate) {
     }
 
 }
-
 
 function onLoad() {
     const epoch = performance.now();
