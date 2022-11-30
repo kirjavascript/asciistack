@@ -4,16 +4,17 @@ wasm_bindgen('./asciistack_bg.wasm')
 
 const { frame } = wasm_bindgen;
 
-const screen = document.querySelector('.screen');
+const debug = document.querySelector('.debug');
+const playfieldEl = document.querySelector('.playfield');
 const frameCount = document.querySelector('.frameCount');
-
 
 function render(shouldUpdate) {
     const frameData = frame(inputByte());
+    if (!shouldUpdate) return;
 
     if (frameData.isMenu) {
 
-        screen.innerHTML = JSON.stringify(frameData,0,3);
+        debug.innerHTML = JSON.stringify(frameData,0,3);
     } else {
         const { tiles, pieceX, pieceY, pieceOffsets } = frameData;
         const tilesArr = JSON.parse(tiles);
@@ -22,8 +23,14 @@ function render(shouldUpdate) {
             playfield.push(tilesArr.splice(0, 10).map(d => d ? '#' : '.'));
         }
         pieceOffsets.forEach(({x, y}) => {
-            playfield[y+pieceY][x+pieceX] = '#';
+            const Y = y+pieceY;
+            if (Y >= 0) {
+                playfield[Y][x+pieceX] = '#';
+            }
         });
+
+        playfieldEl.textContent = playfield.map(d=>d.join('')).join(`\n`);
+
 
         const cleanData = {
             ...frameData,
@@ -31,11 +38,7 @@ function render(shouldUpdate) {
             pieceOffsets: null,
         };
 
-
-        screen.innerHTML = `
-${playfield.map(d=>d.join('')).join(`\n`)}
-${JSON.stringify(cleanData,0,3)}
-        `;
+        debug.innerHTML = JSON.stringify(cleanData,0,3);
     }
 
 }

@@ -7,25 +7,30 @@ use wasm_bindgen::prelude::*;
 use js_sys::{Object, Array};
 use meta_nestris::state::State;
 use meta_nestris::input::Input;
+use meta_nestris::game_type::GameType;
 
 lazy_mut! {
-    static mut state: State = State::new();
+    static mut STATE: State = State::new();
 }
 
 
 #[wasm_bindgen(start)]
 pub unsafe fn main() {
-    state.init();
+    STATE.init();
 }
 
 #[wasm_bindgen]
 pub unsafe fn frame(input: u8) -> JsValue {
-    state.step(Input::from(input));
+    STATE.step(Input::from(input));
 
     let response = Object::new();
 
-    match &state {
+    match &mut STATE {
         Value(State::MenuState(menu_state)) => {
+
+            menu_state.copyright_skip_timer = 0;
+            menu_state.delay_timer = 0;
+
             js_sys::Reflect::set(
                 &response,
                 &"menuMode".into(),
@@ -39,7 +44,7 @@ pub unsafe fn frame(input: u8) -> JsValue {
             ).unwrap();
 
             let game_type = if
-                menu_state.game_type == meta_nestris::game_type::GameType::A.into()
+                menu_state.game_type == GameType::A.into()
             { "A" } else { "B" };
 
             js_sys::Reflect::set(

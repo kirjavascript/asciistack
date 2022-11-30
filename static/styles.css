@@ -1,4 +1,10 @@
+@font-face {
+    font-family: 'Square';
+    src: url('./square.ttf')  format('truetype'); /* Legacy iOS */
+}
+
 html, body {
+    /* font-family: 'Square'; */
     height: 100%;
     margin: 0;
     background-color: #111;
@@ -32,7 +38,7 @@ main {
         align-items: center;
     }
 }
-button, input, .file {
+button, input {
     background-color: #111;
     color: #777;
     font-family: monospace;
@@ -51,9 +57,6 @@ a {
 .frameCount {
     font-size: 16px;
     font-weight: bold;
-}
-input[type="file"] {
-    display: none;
 }
 input[type="checkbox"] {
     accent-color: #333;
