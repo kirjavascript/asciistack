@@ -46,6 +46,7 @@ main {
 
 .game {
     display: flex;
+    position: relative;
 }
 .game-right, .game-left {
     width: 10em;
@@ -61,7 +62,11 @@ main {
     margin-top: 4em;
     position: relative;
 }
-
+#pause {
+    position: absolute;
+    left: 13.5em;
+    top: 14em;
+}
 #next-hover {
     position: absolute;
     left: 0em;

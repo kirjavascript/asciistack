@@ -10,6 +10,7 @@ document.querySelector('#skip-legal').addEventListener('click', () => {
 const playfieldEl = document.querySelector('.playfield');
 const gameEl = document.querySelector('.game');
 const menuEl = document.querySelector('.menu');
+const pauseEl = document.querySelector('#pause');
 const scoreEl = document.querySelector('#score');
 const linesEl = document.querySelector('#lines');
 const levelEl = document.querySelector('#level');
@@ -31,6 +32,8 @@ const nextPieces = {
     [0xb]: [' ##\n##', 1.5, 3.1],
     [0xe]: ['###\n#', 1.5, 3.1],
 };
+
+let lastX = 5; // to check for movement
 
 function render(shouldUpdate) {
     const input = inputByte();
@@ -67,6 +70,7 @@ function render(shouldUpdate) {
                 },
             );
         }
+        lastX = 5;
     } else {
         // gameplay
         gameEl.style.display = '';
@@ -82,7 +86,10 @@ function render(shouldUpdate) {
             lines,
             level,
             playState,
+            paused,
         } = frameData;
+
+        pauseEl.style.display = paused ? '' : 'none';
         const tilesArr = JSON.parse(tiles);
         const playfield = [];
         while (tilesArr.length) {
