@@ -28,7 +28,6 @@ skipLegalEl.addEventListener('click', () => {
 // burning
 // b type
 
-
 // debug.style.display = 'none';
 
 const nextPieces = {
@@ -41,7 +40,19 @@ const nextPieces = {
     [0xe]: ['###\n#', 1.5, 3.1],
 };
 
-let lastX = 5; // to check for movement
+const lineClears = [
+    '####  ####',
+    '###    ###',
+    '##      ##',
+    '#        #',
+    '          ',
+];
+
+// JS tracked stuff
+const state = {
+    lastX: 5, // to check for movement
+    burnTimer: 0,
+};
 
 function render(shouldUpdate) {
     const input = inputByte();
@@ -53,7 +64,8 @@ function render(shouldUpdate) {
         const { menuMode, gameType, level } = frameData;
         gameEl.style.display = 'none';
         menuEl.style.display = '';
-        skipLegalEl.style.display = menuMode === 'CopyrightScreen' ? '' : 'none';
+        skipLegalEl.style.display =
+            menuMode === 'CopyrightScreen' ? '' : 'none';
         debug.innerHTML = JSON.stringify(frameData, 0, 3);
         [...menuEl.children].forEach((node) => {
             node.style.display = node.id === menuMode ? '' : 'none';
@@ -115,15 +127,37 @@ function render(shouldUpdate) {
             });
         }
 
-        if (playState == 'DoNothing') {
+        if (playState === 'LockTetrimino') {
+            state.burningRows = undefined;
+        } else if (playState === 'CheckForCompletedRows') {
+            if (!state.burningRows) {
+                state.burningRows = playfield
+                    .map((d, i) => [i, d.join('')])
+                    .filter(([_, str]) => str === '##########')
+                    .map(([i]) => i);
+                state.playfieldCopy = playfield;
+            }
+            playfield.splice(0, playfield.length, ...state.playfieldCopy);
+        } else if (playState === 'DoNothing') {
             // burning
+            // use copy of playfield for animation
+            playfield.splice(0, playfield.length, ...state.playfieldCopy);
+            // line burns
+            const index =
+                ((Math.min(17, state.burnTimer) / 17) * (lineClears.length - 1)) | 0;
+            state.burningRows.forEach((i) => {
+                playfield[i] = lineClears[index].split('');
+            });
+            state.burnTimer++;
+        } else {
+            state.burnTimer = 0;
         }
 
-        if (dead && (input & 0x10)) {
+        if (dead && input & 0x10) {
             wasm_bindgen.level_select();
         }
 
-        if ((input & 0xF0) === 0xF0) {
+        if ((input & 0xf0) === 0xf0) {
             wasm_bindgen.reset();
         }
 
