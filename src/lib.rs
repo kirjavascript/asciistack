@@ -39,13 +39,14 @@ pub unsafe fn reset() {
 
 #[wasm_bindgen]
 pub unsafe fn level_select() {
-    STATE = Value(State::new());
+    reset();
     match &mut STATE {
         Value(State::MenuState(state)) => {
-            state.menu_mode = MenuMode::LevelSelect
+            state.menu_mode = MenuMode::LevelSelect;
         },
         _ => {},
     }
+    skip_legal();
 }
 
 fn offsets_to_array(offsets: &[(i8, i8); 4]) -> Array {

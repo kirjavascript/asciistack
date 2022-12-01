@@ -3,10 +3,6 @@ wasm_bindgen('./asciistack_bg.wasm').then(onLoad).catch(console.error);
 const debug = document.querySelector('.debug');
 const frameCount = document.querySelector('.frameCount');
 
-document.querySelector('#skip-legal').addEventListener('click', () => {
-    wasm_bindgen.skip_legal();
-});
-
 const playfieldEl = document.querySelector('.playfield');
 const gameEl = document.querySelector('.game');
 const menuEl = document.querySelector('.menu');
@@ -20,6 +16,18 @@ const arrowsA = [...document.querySelectorAll('.arrowA')];
 const arrowsB = [...document.querySelectorAll('.arrowB')];
 const selectedLevelEl = document.querySelector('#selected-level');
 const levelNumbersEl = document.querySelector('#level-numbers');
+
+const skipLegalEl = document.querySelector('#skip-legal');
+
+skipLegalEl.addEventListener('click', () => {
+    wasm_bindgen.skip_legal();
+});
+
+// TODO
+// sfx
+// burning
+// b type
+
 
 // debug.style.display = 'none';
 
@@ -45,6 +53,7 @@ function render(shouldUpdate) {
         const { menuMode, gameType, level } = frameData;
         gameEl.style.display = 'none';
         menuEl.style.display = '';
+        skipLegalEl.style.display = menuMode === 'CopyrightScreen' ? '' : 'none';
         debug.innerHTML = JSON.stringify(frameData, 0, 3);
         [...menuEl.children].forEach((node) => {
             node.style.display = node.id === menuMode ? '' : 'none';
@@ -212,8 +221,7 @@ html.addEventListener('keydown', (e) => {
         // handle SOCD as second input priority for L/R
         if (index === 6) controls.delete(7);
         if (index === 7) controls.delete(6);
-        //twitter.com/DannyDeVito/status/1597703356226543616
-        https: controls.add(index);
+        controls.add(index);
         e.preventDefault();
     }
 });
