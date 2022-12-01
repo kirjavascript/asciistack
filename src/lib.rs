@@ -109,6 +109,18 @@ pub unsafe fn frame(input: u8) -> JsValue {
                 &state.selected_level.into()
             ).unwrap();
 
+            js_sys::Reflect::set(
+                &response,
+                &"height".into(),
+                &state.selected_height.into()
+            ).unwrap();
+
+            js_sys::Reflect::set(
+                &response,
+                &"selectingHeight".into(),
+                &state.selecting_height.into()
+            ).unwrap();
+
             response.into()
         },
         Value(State::GameplayState(state)) => {

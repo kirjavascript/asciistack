@@ -16,6 +16,9 @@ const arrowsA = [...document.querySelectorAll('.arrowA')];
 const arrowsB = [...document.querySelectorAll('.arrowB')];
 const selectedLevelEl = document.querySelector('#selected-level');
 const levelNumbersEl = document.querySelector('#level-numbers');
+const heightEl = document.querySelector('#height');
+const selectedHeightEl = document.querySelector('#selected-height');
+const heightNumbersEl = document.querySelector('#height-numbers');
 
 const skipLegalEl = document.querySelector('#skip-legal');
 
@@ -25,10 +28,8 @@ skipLegalEl.addEventListener('click', () => {
 
 // TODO
 // sfx
-// burning
-// b type
 
-// debug.style.display = 'none';
+debug.style.display = 'none';
 
 const nextPieces = {
     [0x12]: ['####', 1, 3.5],
@@ -52,6 +53,8 @@ const lineClears = [
 const state = {
     lastX: 5, // to check for movement
     burnTimer: 0,
+    burningRows: undefined,
+    playfieldCopy: undefined,
 };
 
 function render(shouldUpdate) {
@@ -61,7 +64,8 @@ function render(shouldUpdate) {
 
     if (frameData.isMenu) {
         // menu
-        const { menuMode, gameType, level } = frameData;
+        const { menuMode, gameType, level, height, selectingHeight } = frameData;
+        const typeA = gameType === 'A';
         gameEl.style.display = 'none';
         menuEl.style.display = '';
         skipLegalEl.style.display =
@@ -72,26 +76,32 @@ function render(shouldUpdate) {
         });
         if (menuMode === 'GameTypeSelect') {
             arrowsA.forEach((node) => {
-                node.textContent = gameType === 'A' ? node.dataset.glyph : ' ';
+                node.textContent = typeA ? node.dataset.glyph : ' ';
             });
             arrowsB.forEach((node) => {
-                node.textContent = gameType === 'B' ? node.dataset.glyph : ' ';
+                node.textContent = !typeA ? node.dataset.glyph : ' ';
             });
             mode.textContent = gameType === 'A' ? 1 : 2;
         } else if (menuMode === 'LevelSelect') {
             const selectedLevel = level + (((input & 0x80) / 12) | 0);
             selectedLevelEl.textContent = String(selectedLevel).padStart(2, 0);
-            let count = 0;
-            levelNumbersEl.textContent = levelNumbersEl.textContent.replace(
-                /\d|#/g,
-                (_) => {
-                    const number = count === level ? '#' : count;
-                    count++;
-                    return number;
-                },
-            );
+            const renderNumbers = (str, selected, cond) => {
+                let count = 0;
+                return str.replace(
+                    /\d|#/g,
+                    (_) => {
+                        const number = count === selected && cond ? '#' : count;
+                        count++;
+                        return number;
+                    },
+                )
+            };
+            levelNumbersEl.textContent = renderNumbers(levelNumbersEl.textContent, level, !selectingHeight);
+            // btype
+            heightEl.style.display = typeA ? 'none' : '';
+            selectedHeightEl.textContent = height;
+            heightNumbersEl.textContent = renderNumbers(heightNumbersEl.textContent, height, selectingHeight);
         }
-        lastX = 5;
     } else {
         // gameplay
         gameEl.style.display = '';
@@ -144,7 +154,7 @@ function render(shouldUpdate) {
             playfield.splice(0, playfield.length, ...state.playfieldCopy);
             // line burns
             const index =
-                ((Math.min(17, state.burnTimer) / 17) * (lineClears.length - 1)) | 0;
+                ((Math.min(16, state.burnTimer) / 16) * (lineClears.length - 1)) | 0;
             state.burningRows.forEach((i) => {
                 playfield[i] = lineClears[index].split('');
             });
