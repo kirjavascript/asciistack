@@ -154,7 +154,7 @@ function render(shouldUpdate) {
             playfield.splice(0, playfield.length, ...state.playfieldCopy);
             // line burns
             const index =
-                ((Math.min(16, state.burnTimer) / 16) * (lineClears.length - 1)) | 0;
+                ((Math.min(15, state.burnTimer) / 15) * (lineClears.length - 1)) | 0;
             state.burningRows.forEach((i) => {
                 playfield[i] = lineClears[index].split('');
             });
