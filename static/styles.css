@@ -21,6 +21,7 @@ html, body {
     background-color: #080808;
     color: #999;
     box-sizing: border-box;
+    /* display: none; */
 }
 *, *:before, *:after {
     box-sizing: inherit;

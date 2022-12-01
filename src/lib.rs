@@ -3,6 +3,7 @@
 extern crate lazy_mut;
 
 use lazy_mut::LazyMut::{Value, Init};
+use meta_nestris::menu_mode::MenuMode;
 use wasm_bindgen::prelude::*;
 use js_sys::{Object, Array};
 use meta_nestris::state::State;
@@ -28,6 +29,22 @@ pub unsafe fn skip_legal() {
         },
         _ => {},
 
+    }
+}
+
+#[wasm_bindgen]
+pub unsafe fn reset() {
+    STATE = Value(State::new());
+}
+
+#[wasm_bindgen]
+pub unsafe fn level_select() {
+    STATE = Value(State::new());
+    match &mut STATE {
+        Value(State::MenuState(state)) => {
+            state.menu_mode = MenuMode::LevelSelect
+        },
+        _ => {},
     }
 }
 
@@ -154,6 +171,12 @@ pub unsafe fn frame(input: u8) -> JsValue {
                 &response,
                 &"level".into(),
                 &state.level.into()
+            ).unwrap();
+
+            js_sys::Reflect::set(
+                &response,
+                &"dead".into(),
+                &state.dead.into()
             ).unwrap();
 
             response.into()

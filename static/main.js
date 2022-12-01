@@ -87,6 +87,7 @@ function render(shouldUpdate) {
             level,
             playState,
             paused,
+            dead,
         } = frameData;
 
         pauseEl.style.display = paused ? '' : 'none';
@@ -103,6 +104,18 @@ function render(shouldUpdate) {
                     playfield[Y][x + pieceX] = '#';
                 }
             });
+        }
+
+        if (playState == 'DoNothing') {
+            // burning
+        }
+
+        if (dead && (input & 0x10)) {
+            wasm_bindgen.level_select();
+        }
+
+        if ((input & 0xF0) === 0xF0) {
+            wasm_bindgen.reset();
         }
 
         playfieldEl.textContent = playfield
@@ -122,6 +135,7 @@ function render(shouldUpdate) {
             tiles: null,
             pieceOffsets: null,
             nextOffsets: null,
+            input,
         };
 
         debug.innerHTML = JSON.stringify(cleanData, 0, 3);

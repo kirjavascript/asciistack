@@ -190,6 +190,18 @@ __exports.skip_legal = function() {
 };
 
 /**
+*/
+__exports.reset = function() {
+    wasm.reset();
+};
+
+/**
+*/
+__exports.level_select = function() {
+    wasm.level_select();
+};
+
+/**
 * @param {number} input
 * @returns {any}
 */
