@@ -64,6 +64,7 @@ function render(shouldUpdate) {
         // menu
         const { menuMode, gameType, level, height, selectingHeight } =
             frameData;
+
         const typeA = gameType === 'A';
         gameEl.style.display = 'none';
         menuEl.style.display = '';
@@ -328,6 +329,10 @@ function handleSFX(frameData) {
         sfxDirty.topout = false;
         sfxDirty.lock = false;
         sfxDirty.burn = false;
+        sfxDirty.moveTimer = 0;
+        const hash = JSON.stringify(frameData);
+        if (sfxDirty.boopHash !== hash) sfx.boop();
+        sfxDirty.boopHash = hash;
     } else {
         const { playState, pieceX, dead, level, piece } = frameData;
 
