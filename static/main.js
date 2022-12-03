@@ -299,7 +299,7 @@ const sfx = {};
     'maxburn',
     'topout',
 ].forEach((name) => {
-    sfx[name] = () => (console.log(name),new Audio(`./sfx/${name}.mp3`).play());
+    sfx[name] = () => sfxEnabled && new Audio(`./sfx/${name}.mp3`).play();
 });
 
 const sfxBox = document.querySelector('#sfx');
@@ -318,7 +318,6 @@ const sfxDirty = {
     burn: false,
     lock: false,
     piece: 0, // track rotate
-    lastLevel: 0,
     moveTimer: 0,
     boopHash: '',
 };
@@ -334,7 +333,7 @@ function handleSFX(frameData) {
         if (sfxDirty.boopHash !== hash) sfx.boop();
         sfxDirty.boopHash = hash;
     } else {
-        const { playState, pieceX, dead, level, piece } = frameData;
+        const { playState, pieceX, dead, piece } = frameData;
 
         if (playState === 'MoveTetrimino') {
             if (sfxDirty.lastX !== pieceX) sfx.move();
@@ -375,8 +374,5 @@ function handleSFX(frameData) {
         } else {
             sfxDirty.burn = false;
         }
-
-        sfxDirty.lastLevel = level;
-
     }
 }
