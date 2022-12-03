@@ -26,9 +26,6 @@ skipLegalEl.addEventListener('click', () => {
     wasm_bindgen.skip_legal();
 });
 
-// TODO
-// sfx
-
 debug.style.display = 'none';
 
 const nextPieces = {
@@ -51,7 +48,6 @@ const lineClears = [
 
 // JS tracked stuff
 const state = {
-    lastX: 5, // to check for movement
     burnTimer: 0,
     burningRows: undefined,
     playfieldCopy: undefined,
@@ -62,9 +58,12 @@ function render(shouldUpdate) {
     const frameData = wasm_bindgen.frame(input);
     if (!shouldUpdate) return;
 
+    handleSFX(frameData);
+
     if (frameData.isMenu) {
         // menu
-        const { menuMode, gameType, level, height, selectingHeight } = frameData;
+        const { menuMode, gameType, level, height, selectingHeight } =
+            frameData;
         const typeA = gameType === 'A';
         gameEl.style.display = 'none';
         menuEl.style.display = '';
@@ -87,21 +86,27 @@ function render(shouldUpdate) {
             selectedLevelEl.textContent = String(selectedLevel).padStart(2, 0);
             const renderNumbers = (str, selected, cond) => {
                 let count = 0;
-                return str.replace(
-                    /\d|#/g,
-                    (_) => {
-                        const number = count === selected && cond ? '#' : count;
-                        count++;
-                        return number;
-                    },
-                )
+                return str.replace(/\d|#/g, (_) => {
+                    const number = count === selected && cond ? '#' : count;
+                    count++;
+                    return number;
+                });
             };
-            levelNumbersEl.textContent = renderNumbers(levelNumbersEl.textContent, level, !selectingHeight);
+            levelNumbersEl.textContent = renderNumbers(
+                levelNumbersEl.textContent,
+                level,
+                !selectingHeight,
+            );
             // btype
             heightEl.style.display = typeA ? 'none' : '';
             selectedHeightEl.textContent = height;
-            heightNumbersEl.textContent = renderNumbers(heightNumbersEl.textContent, height, selectingHeight);
+            heightNumbersEl.textContent = renderNumbers(
+                heightNumbersEl.textContent,
+                height,
+                selectingHeight,
+            );
         }
+        state.lastX = 5;
     } else {
         // gameplay
         gameEl.style.display = '';
@@ -154,7 +159,9 @@ function render(shouldUpdate) {
             playfield.splice(0, playfield.length, ...state.playfieldCopy);
             // line burns
             const index =
-                ((Math.min(15, state.burnTimer) / 15) * (lineClears.length - 1)) | 0;
+                ((Math.min(16, state.burnTimer) / 16) *
+                    (lineClears.length - 1)) |
+                0;
             state.burningRows.forEach((i) => {
                 playfield[i] = lineClears[index].split('');
             });
@@ -275,3 +282,96 @@ html.addEventListener('keyup', (e) => {
         e.preventDefault();
     }
 });
+
+// sfx
+
+const sfx = {};
+
+[
+    'boop',
+    'levelup',
+    'rotate',
+    'lock',
+    'burn',
+    'move',
+    'sound',
+    'maxburn',
+    'topout',
+].forEach((name) => {
+    sfx[name] = () => (console.log(name),new Audio(`./sfx/${name}.mp3`).play());
+});
+
+const sfxBox = document.querySelector('#sfx');
+let sfxEnabled = false;
+sfxBox.addEventListener('click', (e) => {
+    sfxEnabled = e.target.checked;
+    if (sfxEnabled) {
+        sfx.sound();
+    }
+});
+sfxEnabled = sfxBox.checked;
+
+const sfxDirty = {
+    lastX: 5,
+    topout: false,
+    burn: false,
+    lock: false,
+    piece: 0, // track rotate
+    lastLevel: 0,
+    moveTimer: 0,
+    boopHash: '',
+};
+
+function handleSFX(frameData) {
+    if (frameData.isMenu) {
+        sfxDirty.lastX = 5;
+        sfxDirty.topout = false;
+        sfxDirty.lock = false;
+        sfxDirty.burn = false;
+    } else {
+        const { playState, pieceX, dead, level, piece } = frameData;
+
+        if (playState === 'MoveTetrimino') {
+            if (sfxDirty.lastX !== pieceX) sfx.move();
+            sfxDirty.lastX = pieceX;
+            if (sfxDirty.moveTimer && sfxDirty.piece !== piece) {
+                sfx.rotate();
+            }
+            sfxDirty.moveTimer++;
+        } else {
+            sfxDirty.lastX = 5;
+            sfxDirty.moveTimer = 0;
+        }
+        sfxDirty.piece = piece;
+
+        if (dead && !sfxDirty.topout) {
+            sfx.topout();
+            sfxDirty.topout = true;
+        }
+
+        if (playState === 'LockTetrimino') {
+            if (!sfxDirty.lock) {
+                sfx.lock();
+                sfxDirty.lock = true;
+            }
+        } else {
+            sfxDirty.lock = false;
+        }
+
+        if (playState === 'DoNothing') {
+            if (!sfxDirty.burn) {
+                if (state.burningRows.length === 4) {
+                    sfx.maxburn();
+                } else {
+                    sfx.burn();
+                }
+                sfxDirty.burn = true;
+            }
+        } else {
+            sfxDirty.burn = false;
+        }
+
+        sfxDirty.lastLevel = level;
+
+    }
+}

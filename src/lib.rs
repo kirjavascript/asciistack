@@ -152,6 +152,12 @@ pub unsafe fn frame(input: u8) -> JsValue {
 
             js_sys::Reflect::set(
                 &response,
+                &"piece".into(),
+                &state.current_piece.to_id().into(),
+            ).unwrap();
+
+            js_sys::Reflect::set(
+                &response,
                 &"pieceOffsets".into(),
                 &offsets_to_array(state.current_piece.get_tile_offsets()),
             ).unwrap();
