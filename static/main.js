@@ -247,6 +247,15 @@ window.addEventListener('blur', () => controls.clear());
 window.addEventListener('focus', () => controls.clear());
 
 let keymap = {};
+let padmap = undefined;
+
+const savedControls = window.localStorage.getItem('controls');
+if (savedControls) {
+    const controlData = JSON.parse(savedControls);
+    keymap = controlData.keymap;
+    padmap = controlData.padmap;
+    document.querySelector('#controls').textContent = '';
+}
 
 [
     ['x', 'X', 'm', 'M'], // A
