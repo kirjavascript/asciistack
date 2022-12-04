@@ -34,7 +34,17 @@ pub unsafe fn skip_legal() {
 
 #[wasm_bindgen]
 pub unsafe fn reset() {
+    let random = match &STATE {
+        Value(State::MenuState(state)) => state.random.clone(),
+        Value(State::GameplayState(state)) => state.random.clone(),
+        _ => unreachable!("oh no"),
+    };
     STATE = Value(State::new());
+    match &mut STATE {
+        Value(State::MenuState(state)) => { state.random = random },
+        Value(State::GameplayState(state)) => { state.random = random },
+        _ => unreachable!("oh no"),
+    };
 }
 
 #[wasm_bindgen]
