@@ -299,7 +299,9 @@ const sfx = {};
     'maxburn',
     'topout',
 ].forEach((name) => {
-    sfx[name] = () => sfxEnabled && new Audio(`./sfx/${name}.mp3`).play();
+    sfx[name] = () =>
+        sfxEnabled &&
+        new Audio(`./sfx/${name}.mp3`).play().catch(console.log);
 });
 
 const sfxBox = document.querySelector('#sfx');
