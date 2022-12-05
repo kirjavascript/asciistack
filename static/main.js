@@ -11,7 +11,7 @@ const scoreEl = document.querySelector('#score');
 const linesEl = document.querySelector('#lines');
 const levelEl = document.querySelector('#level');
 const nextEl = document.querySelector('#next-hover');
-const modeEl = [...document.querySelectorAll('#mode')];
+const modeEl = document.querySelector('#mode');
 const arrowsA = [...document.querySelectorAll('.arrowA')];
 const arrowsB = [...document.querySelectorAll('.arrowB')];
 const selectedLevelEl = document.querySelector('#selected-level');
@@ -81,7 +81,7 @@ function render(shouldUpdate) {
             arrowsB.forEach((node) => {
                 node.textContent = !typeA ? node.dataset.glyph : ' ';
             });
-            modeEl.textContent = gameType === 'A' ? 1 : 2;
+            modeEl.textContent = typeA ? 1 : 2;
         } else if (menuMode === 'LevelSelect') {
             const selectedLevel = level + (((input & 0x80) / 12) | 0);
             selectedLevelEl.textContent = String(selectedLevel).padStart(2, 0);
