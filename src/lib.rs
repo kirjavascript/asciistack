@@ -150,6 +150,10 @@ pub unsafe fn frame(input: u8) -> JsValue {
         },
         Value(State::GameplayState(state)) => {
 
+            if state.game_type == GameType::B && state.line_count == 0 {
+                state.dead = true;
+            }
+
             js_sys::Reflect::set(
                 &response,
                 &"playState".into(),
