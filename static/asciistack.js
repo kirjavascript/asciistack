@@ -191,6 +191,12 @@ __exports.skip_legal = function() {
 
 /**
 */
+__exports.killscreen = function() {
+    wasm.killscreen();
+};
+
+/**
+*/
 __exports.reset = function() {
     wasm.reset();
 };

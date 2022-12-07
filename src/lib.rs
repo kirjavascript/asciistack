@@ -37,6 +37,19 @@ pub unsafe fn skip_legal() {
 }
 
 #[wasm_bindgen]
+pub unsafe fn killscreen() {
+    match &mut STATE {
+        Value(State::MenuState(state)) => {
+            if state.menu_mode != MenuMode::CopyrightScreen {
+                state.selected_level = 29;
+                state.step_init_game_state();
+            }
+        },
+        _ => {},
+    }
+}
+
+#[wasm_bindgen]
 pub unsafe fn reset() {
     let random = match &STATE {
         Value(State::MenuState(state)) => state.random.clone(),

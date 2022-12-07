@@ -21,9 +21,14 @@ const selectedHeightEl = document.querySelector('#selected-height');
 const heightNumbersEl = document.querySelector('#height-numbers');
 
 const skipLegalEl = document.querySelector('#skip-legal');
+const level29El = document.querySelector('#level-29');
 
 skipLegalEl.addEventListener('click', () => {
     wasm_bindgen.skip_legal();
+});
+
+level29El.addEventListener('click', () => {
+    wasm_bindgen.killscreen();
 });
 
 debug.style.display = 'none';
@@ -66,10 +71,11 @@ function render(shouldUpdate) {
             frameData;
 
         const typeA = gameType === 'A';
+        const isLegal = menuMode === 'CopyrightScreen';
         gameEl.style.display = 'none';
         menuEl.style.display = '';
-        skipLegalEl.style.display =
-            menuMode === 'CopyrightScreen' ? '' : 'none';
+        skipLegalEl.style.display = isLegal ? '' : 'none';
+        level29El.style.display = !isLegal ? '' : 'none';
         debug.innerHTML = JSON.stringify(frameData, 0, 3);
         [...menuEl.children].forEach((node) => {
             node.style.display = node.id === menuMode ? '' : 'none';
