@@ -14,6 +14,10 @@ lazy_mut! {
     static mut STATE: State = State::new();
 }
 
+static mut SELECTED_LEVEL: u8 = 0;
+static mut SELECTED_HEIGHT: u8 = 0;
+static mut SELECTED_MODE: GameType = GameType::A;
+
 
 #[wasm_bindgen(start)]
 pub unsafe fn main() {
@@ -41,7 +45,12 @@ pub unsafe fn reset() {
     };
     STATE = Value(State::new());
     match &mut STATE {
-        Value(State::MenuState(state)) => { state.random = random },
+        Value(State::MenuState(state)) => {
+            state.selected_level = SELECTED_LEVEL;
+            state.selected_height = SELECTED_HEIGHT;
+            state.game_type = SELECTED_MODE;
+            state.random = random;
+        },
         Value(State::GameplayState(state)) => { state.random = random },
         _ => unreachable!("oh no"),
     };
@@ -89,8 +98,13 @@ pub unsafe fn frame(input: u8) -> JsValue {
 
     let response = Object::new();
 
+
     match &mut STATE {
         Value(State::MenuState(state)) => {
+
+            SELECTED_LEVEL = state.selected_level;
+            SELECTED_HEIGHT = state.selected_height;
+            SELECTED_MODE = state.game_type;
 
             js_sys::Reflect::set(
                 &response,
